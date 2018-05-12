@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import ru.to65apps.danilishe.contactviewhomework1.model.Contact;
@@ -48,6 +49,12 @@ public class ContactDetailFragment extends Fragment {
                     "\nПочта: " + (mItem.getEmail() != null ? mItem.getEmail() : "нет почты");
 
             ((TextView) rootView.findViewById(R.id.contact_detail)).setText(text);
+
+            if (mItem.getImageUri() != null) {
+                ImageView contactIcon = (ImageView) getActivity().findViewById(R.id.contactIcon);
+                contactIcon.setVisibility(View.VISIBLE);
+                contactIcon.setImageURI(mItem.getImageUri());
+            }
         }
 
         return rootView;

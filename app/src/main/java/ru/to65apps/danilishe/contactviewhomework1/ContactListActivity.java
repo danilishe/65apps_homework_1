@@ -1,12 +1,14 @@
 package ru.to65apps.danilishe.contactviewhomework1;
 
 import android.Manifest;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.annotation.NonNull;
@@ -21,9 +23,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import ru.to65apps.danilishe.contactviewhomework1.model.Contact;
 
@@ -33,8 +37,15 @@ import static android.provider.ContactsContract.CommonDataKinds.Phone;
 
 public class ContactListActivity extends AppCompatActivity {
 
+    public static final String[] PROJECTION = new String[]{
+            Phone._ID,
+            Phone.RAW_CONTACT_ID,
+            ContactsContract.Contacts.Data.MIMETYPE,
+            Contactables.DISPLAY_NAME,
+            Phone.NUMBER,
+            ContactsContract.CommonDataKinds.Photo.PHOTO_URI};
     private boolean mTwoPane;
-    public final static Map<String, Contact> CONTACTS = new HashMap<>();
+    public final static Map<String, Contact> CONTACTS = new TreeMap<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,7 +82,7 @@ public class ContactListActivity extends AppCompatActivity {
     public List<Contact> loadContacts() {
         if (CONTACTS.isEmpty()) {
             final Cursor cursor = getContentResolver().query(ContactsContract.Data.CONTENT_URI,
-                    new String[]{Phone._ID, Phone.RAW_CONTACT_ID, ContactsContract.Contacts.Data.MIMETYPE, Contactables.DISPLAY_NAME, Phone.NUMBER}, null, null, ContactsContract.Contacts.DISPLAY_NAME + " ASC");
+                    PROJECTION, null, null, ContactsContract.Contacts.DISPLAY_NAME + " ASC");
             if (cursor != null && cursor.getCount() > 0) {
                 cursor.moveToFirst();
 
@@ -89,6 +100,26 @@ public class ContactListActivity extends AppCompatActivity {
                             break;
                         case Email.CONTENT_ITEM_TYPE:
                             contact.setEmail(cursor.getString(cursor.getColumnIndex(Email.ADDRESS)));
+                            break;
+                        case ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE:
+                            contact.setImageUri(
+                                    Uri.parse(cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.Photo.PHOTO_URI))));
+//                            Cursor query = getContentResolver().query(ContactsContract.Data.CONTENT_URI, null,
+//                                    ContactsContract.Contacts.Data.MIMETYPE + "='" + ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE + "' AND " + Phone.RAW_CONTACT_ID + "=" + contact_id,
+//                                    null, null);
+//                            if (query == null) break;
+//                            query.moveToFirst();
+//                            int column = 0;
+//                            for (String col : query.getColumnNames()) {
+//                                System.out.println(col + "=" + query.getString(column++));
+//                            }
+//                            query.close();
+//                            System.out.println("=========");
+
+//                            Uri person = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long
+//                                    .parseLong(contact_id));
+//                            Uri uri = Uri.withAppendedPath(person, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
+//                            contact.setImageUri(uri);
                             break;
                     }
 
@@ -174,9 +205,15 @@ public class ContactListActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull final ViewHolder holder, int position) {
-//            holder.contactIcon.setImageResource(R.id.);
+            Contact contact = mContacts.get(position);
 
-            String name = mContacts.get(position).getName();
+            Uri uri = contact.getImageUri();
+            if (uri != null)
+                holder.contactIcon.setImageURI(uri);
+            else
+                holder.contactIcon.setImageResource(R.mipmap.ic_launcher);
+
+            String name = contact.getName();
             if (name == null) {
                 holder.contactName.setTextColor(Color.GRAY);
                 holder.contactName.setText("Нет имени");
@@ -184,7 +221,7 @@ public class ContactListActivity extends AppCompatActivity {
                 holder.contactName.setText(name);
             }
 
-            String phone = mContacts.get(position).getPhone();
+            String phone = contact.getPhone();
             if (phone == null) {
                 holder.contactPhone.setText("нет телефона");
                 holder.contactPhone.setTextColor(Color.GRAY);
@@ -192,7 +229,7 @@ public class ContactListActivity extends AppCompatActivity {
                 holder.contactPhone.setText(phone);
             }
 
-            holder.itemView.setTag(mContacts.get(position));
+            holder.itemView.setTag(contact);
             holder.itemView.setOnClickListener(mOnClickListener);
         }
 
