@@ -1,11 +1,9 @@
 package ru.to65apps.danilishe.contactviewhomework1;
 
 import android.Manifest;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.net.Uri;
@@ -23,8 +21,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -91,8 +87,8 @@ public class ContactListActivity extends AppCompatActivity {
                     Contact contact = CONTACTS.get(contact_id);
                     if (contact == null) {
                         String name = cursor.getString(cursor.getColumnIndex(Contactables.DISPLAY_NAME));
-                        contact = new Contact(contact_id, name);
-                        CONTACTS.put(contact_id, contact);
+                        contact = new Contact(name + contact_id, name);
+                        CONTACTS.put(name + contact_id, contact);
                     }
                     switch (cursor.getString(cursor.getColumnIndex(ContactsContract.Contacts.Data.MIMETYPE))) {
                         case Phone.CONTENT_ITEM_TYPE:
