@@ -1,25 +1,48 @@
 package ru.to65apps.danilishe.contactviewhomework1.model;
 
 import android.net.Uri;
+import android.support.annotation.NonNull;
 
-public class Contact {
-    String id, name, phone, email;
-    Uri imageUri;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+
+public class Contact implements Comparable<Contact> {
+    private String id, name;
+    private List<String> mPhones = new ArrayList<>();
+    private List<String> mEmails = new ArrayList<>();
+    private Uri imageUri;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Contact contact = (Contact) o;
+        return Objects.equals(id, contact.id) &&
+                Objects.equals(name, contact.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
+    }
 
     public Contact(String id, String name) {
         this.id = id;
         this.name = name;
     }
 
-    public void setPhone(String phone) {
-        this.phone = phone;
+    public void addPhone(String phones) {
+        mPhones.add(phones);
     }
 
-    public void setEmail(String email) {
-        this.email = email;
+    public void addEmail(String email) {
+        mEmails.add(email);
     }
 
-    public void setImageUri(Uri imageUri) {this.imageUri = imageUri;}
+    public void setImageUri(Uri imageUri) {
+        this.imageUri = imageUri;
+    }
 
     public String getId() {
         return id;
@@ -29,13 +52,21 @@ public class Contact {
         return name;
     }
 
-    public String getPhone() {
-        return phone;
+    public List<String> getPhones() {
+        return mPhones;
     }
 
-    public String getEmail() {
-        return email;
+    public List<String> getEmails() {
+        return mEmails;
     }
 
-    public Uri getImageUri() {return imageUri;}
+    public Uri getImageUri() {
+        return imageUri;
+    }
+
+    @Override
+    public int compareTo(@NonNull Contact o) {
+        return this.getName().compareTo(o.getName()) +
+                37 * this.getId().compareTo(o.getId());
+    }
 }

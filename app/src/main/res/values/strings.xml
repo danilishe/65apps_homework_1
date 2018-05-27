@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">ContactViewHomework1</string>
     <string name="title_contact_detail">Contact Detail</string>
+    <string name="phone_label">Телефон</string>
+    <string name="email_label">Электронная почта</string>
+    <string name="name_label">Имя</string>
+    <string name="no_name">нет имени</string>
+    <string name="no_phone">нет телефона</string>
 </resources>

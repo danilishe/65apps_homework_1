@@ -28,7 +28,7 @@
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
         tools:context="ru.to65apps.danilishe.contactviewhomework1.ContactListActivity"
-        tools:listitem="@layout/contact_list_content" />
+        tools:listitem="@layout/contact_list_item" />
 
     <FrameLayout
         android:id="@+id/contact_detail_container"

@@ -1,6 +1,5 @@
 package ru.to65apps.danilishe.contactviewhomework1;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -12,10 +11,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import ru.to65apps.danilishe.contactviewhomework1.model.Contact;
+import ru.to65apps.danilishe.contactviewhomework1.model.DataProvider;
 
 public class ContactDetailFragment extends Fragment {
 
     public static final String ITEM_ID = "item_id";
+    private final DataProvider dp = DataProvider.getInstance(getContext());
 
     private Contact mItem;
 
@@ -27,10 +28,11 @@ public class ContactDetailFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         if (getArguments() != null && getArguments().containsKey(ITEM_ID)) {
-            mItem = ContactListActivity.CONTACTS.get(getArguments().getString(ITEM_ID));
+            String contactId = getArguments().getString(ITEM_ID);
 
-            Activity activity = this.getActivity();
-            CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);
+            mItem = dp.getContact(contactId);
+
+            CollapsingToolbarLayout appBarLayout = getActivity().findViewById(R.id.toolbar_layout);
             if (appBarLayout != null) {
                 appBarLayout.setTitle(mItem.getName());
             }
@@ -38,20 +40,23 @@ public class ContactDetailFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.contact_detail, container, false);
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.fragment_contact_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
         if (mItem != null) {
-            String text = "Имя: " + (mItem.getName() != null ? mItem.getName() : "Нет имени") +
-                    "\nТелефон: " + (mItem.getPhone() != null ? mItem.getPhone() : "нет телефона") +
-                    "\nПочта: " + (mItem.getEmail() != null ? mItem.getEmail() : "нет почты");
+            TextView phonesField = (TextView) rootView.findViewById(R.id.contact_detail_phone);
+            TextView emailsField = (TextView) rootView.findViewById(R.id.contact_detail_email);
 
-            ((TextView) rootView.findViewById(R.id.contact_detail)).setText(text);
+            for (String phone : mItem.getPhones()) {
+                phonesField.append("\n" + phone);
+            }
+
+            for (String email : mItem.getEmails()) {
+                emailsField.append("\n" + email);
+            }
 
             if (mItem.getImageUri() != null) {
-                ImageView contactIcon = (ImageView) getActivity().findViewById(R.id.contactIcon);
+                ImageView contactIcon = getActivity().findViewById(R.id.contactIcon);
                 contactIcon.setVisibility(View.VISIBLE);
                 contactIcon.setImageURI(mItem.getImageUri());
             }
